@@ -4,7 +4,6 @@ using UnityEngine;
 
 static public class NetworkClientProcessing
 {
-
     #region Send and Receive Data Functions
     static public void ReceivedMessageFromServer(string msg, TransportPipeline pipeline)
     {
@@ -22,8 +21,7 @@ static public class NetworkClientProcessing
         else if (signifier == ServerToClientSignifiers.RemoveBalloon)
         {
             int balloonID = int.Parse(csv[1]);
-            GameObject balloon = GameObject.Find($"Balloon_{balloonID}");
-            if (balloon != null) Destroy(balloon);
+            gameLogic.RemoveBalloon(balloonID); // Delegate destruction to GameLogic
         }
         else if (signifier == ServerToClientSignifiers.SendUnpoppedBalloons)
         {
@@ -39,12 +37,10 @@ static public class NetworkClientProcessing
         }
     }
 
-
     static public void SendMessageToServer(string msg, TransportPipeline pipeline)
     {
         networkClient.SendMessageToServer(msg, pipeline);
     }
-
     #endregion
 
     #region Connection Related Functions and Events
@@ -68,7 +64,6 @@ static public class NetworkClientProcessing
     {
         networkClient.Disconnect();
     }
-
     #endregion
 
     #region Setup
@@ -87,27 +82,20 @@ static public class NetworkClientProcessing
     {
         gameLogic = GameLogic;
     }
-
     #endregion
-
 }
 
 #region Protocol Signifiers
-// Client-to-Server Signifiers (sent from client to server)
 static public class ClientToServerSignifiers
 {
-    public const int BalloonPopped = 1; // Client notifies the server when a balloon is popped
-    public const int RequestUnpoppedBalloons = 2; // Client requests the list of unpopped balloons
+    public const int BalloonPopped = 1;
+    public const int RequestUnpoppedBalloons = 2;
 }
 
-// Server-to-Client Signifiers (sent from server to client)
 static public class ServerToClientSignifiers
 {
-    public const int SpawnBalloon = 1; // Server tells client to spawn a balloon
-    public const int RemoveBalloon = 2; // Server tells client to remove a balloon
-    public const int SendUnpoppedBalloons = 3; // Server sends unpopped balloon data to the client
+    public const int SpawnBalloon = 1;
+    public const int RemoveBalloon = 2;
+    public const int SendUnpoppedBalloons = 3;
 }
-
-
 #endregion
-
