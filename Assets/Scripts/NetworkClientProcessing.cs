@@ -21,7 +21,7 @@ static public class NetworkClientProcessing
         else if (signifier == ServerToClientSignifiers.RemoveBalloon)
         {
             int balloonID = int.Parse(csv[1]);
-            gameLogic.RemoveBalloon(balloonID); // Delegate destruction to GameLogic
+            gameLogic.RemoveBalloon(balloonID); // Ensure GameLogic has this method
         }
         else if (signifier == ServerToClientSignifiers.SendUnpoppedBalloons)
         {
