@@ -27,8 +27,11 @@ public class GameLogic : MonoBehaviour
         }
     }
 
-    public void SpawnNewBalloon(Vector2 screenPosition)
+    public void SpawnNewBalloon(Vector2 screenPosition, int balloonID)
     {
+        // associating each balloon with a unique ID
+        GameObject balloon = new GameObject($"Balloon_{balloonID}");
+
         if (circleTexture == null)
             circleTexture = Resources.Load<Sprite>("Circle");
 
