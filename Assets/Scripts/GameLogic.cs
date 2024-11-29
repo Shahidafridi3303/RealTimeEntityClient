@@ -18,10 +18,14 @@ public class GameLogic : MonoBehaviour
         SpriteRenderer renderer = balloon.AddComponent<SpriteRenderer>();
         renderer.sprite = circleTexture;
 
+        CircleCollider2D collider = balloon.AddComponent<CircleCollider2D>();
+        collider.isTrigger = true; // Ensures it reacts to clicks
+
         balloon.AddComponent<CircleClick>();
         balloon.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(screenPosition.x * Screen.width, screenPosition.y * Screen.height, 0));
         balloon.transform.position = new Vector3(balloon.transform.position.x, balloon.transform.position.y, 0);
     }
+
 
 
     public void RemoveBalloon(int balloonID)

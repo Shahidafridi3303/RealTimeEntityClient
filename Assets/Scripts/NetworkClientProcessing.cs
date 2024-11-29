@@ -25,8 +25,19 @@ static public class NetworkClientProcessing
             Debug.Log($"Client: Removing balloon ID {balloonID}");
             gameLogic.RemoveBalloon(balloonID);
         }
+        else if (signifier == ServerToClientSignifiers.SendUnpoppedBalloons)
+        {
+            Debug.Log("Client: Receiving unpopped balloons from server.");
+            for (int i = 1; i < csv.Length; i += 3)
+            {
+                int balloonID = int.Parse(csv[i]);
+                float xPercent = float.Parse(csv[i + 1]);
+                float yPercent = float.Parse(csv[i + 2]);
+                Vector2 screenPosition = new Vector2(xPercent, yPercent);
+                gameLogic.SpawnNewBalloon(screenPosition, balloonID);
+            }
+        }
     }
-
 
     public static void SendMessageToServer(string msg)
     {
@@ -35,12 +46,13 @@ static public class NetworkClientProcessing
 
     public static void ConnectionEvent()
     {
+        Debug.Log("Client: Connected to the server.");
         SendMessageToServer($"{ClientToServerSignifiers.RequestUnpoppedBalloons}");
     }
 
     public static void DisconnectionEvent()
     {
-        Debug.Log("Disconnected from the server.");
+        Debug.Log("Client: Disconnected from the server.");
     }
 
     public static void SetGameLogic(GameLogic logic) => gameLogic = logic;
