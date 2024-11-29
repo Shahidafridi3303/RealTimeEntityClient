@@ -14,6 +14,11 @@ public class CircleClick : MonoBehaviour
     }
     void OnMouseDown()
     {
-        Destroy(gameObject);
+        void OnMouseDown()
+        {
+            int balloonID = GetInstanceID(); // Or another unique identifier
+            NetworkClientProcessing.SendMessageToServer($"{ClientToServerSignifiers.BalloonPopped},{balloonID}", TransportPipeline.ReliableAndInOrder);
+            Destroy(gameObject);
+        }
     }
 }
