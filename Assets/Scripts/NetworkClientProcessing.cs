@@ -79,15 +79,21 @@ static public class NetworkClientProcessing
 }
 
 #region Protocol Signifiers
+// Client-to-Server Signifiers (sent from client to server)
 static public class ClientToServerSignifiers
 {
-    public const int asd = 1;
+    public const int BalloonPopped = 1; // Client notifies the server when a balloon is popped
+    public const int RequestUnpoppedBalloons = 2; // Client requests the list of unpopped balloons
 }
 
+// Server-to-Client Signifiers (sent from server to client)
 static public class ServerToClientSignifiers
 {
-    public const int asd = 1;
+    public const int SpawnBalloon = 1; // Server tells client to spawn a balloon
+    public const int RemoveBalloon = 2; // Server tells client to remove a balloon
+    public const int SendUnpoppedBalloons = 3; // Server sends unpopped balloon data to the client
 }
+
 
 #endregion
 
