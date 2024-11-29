@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 static public class NetworkClientProcessing
 {
-    #region Send and Receive Data Functions
-    static public void ReceivedMessageFromServer(string msg, TransportPipeline pipeline)
+    static NetworkClient networkClient;
+    static GameLogic gameLogic;
+
+    public static void ReceivedMessageFromServer(string msg)
     {
         string[] csv = msg.Split(',');
         int signifier = int.Parse(csv[0]);
@@ -16,73 +16,35 @@ static public class NetworkClientProcessing
             float xPercent = float.Parse(csv[2]);
             float yPercent = float.Parse(csv[3]);
             Vector2 screenPosition = new Vector2(xPercent, yPercent);
+            Debug.Log($"Client: Spawning balloon ID {balloonID} at ({xPercent}, {yPercent})");
             gameLogic.SpawnNewBalloon(screenPosition, balloonID);
         }
         else if (signifier == ServerToClientSignifiers.RemoveBalloon)
         {
             int balloonID = int.Parse(csv[1]);
-            gameLogic.RemoveBalloon(balloonID); // Ensure GameLogic has this method
-        }
-        else if (signifier == ServerToClientSignifiers.SendUnpoppedBalloons)
-        {
-            // Parse and spawn all unpopped balloons
-            for (int i = 1; i < csv.Length; i += 3)
-            {
-                int balloonID = int.Parse(csv[i]);
-                float xPercent = float.Parse(csv[i + 1]);
-                float yPercent = float.Parse(csv[i + 2]);
-                Vector2 screenPosition = new Vector2(xPercent, yPercent);
-                gameLogic.SpawnNewBalloon(screenPosition, balloonID);
-            }
+            Debug.Log($"Client: Removing balloon ID {balloonID}");
+            gameLogic.RemoveBalloon(balloonID);
         }
     }
 
-    static public void SendMessageToServer(string msg, TransportPipeline pipeline)
-    {
-        networkClient.SendMessageToServer(msg, pipeline);
-    }
-    #endregion
 
-    #region Connection Related Functions and Events
-    static public void ConnectionEvent()
+    public static void SendMessageToServer(string msg)
     {
-        Debug.Log("Network Connection Event!");
+        networkClient.SendMessageToServer(msg);
     }
-    static public void DisconnectionEvent()
-    {
-        Debug.Log("Network Disconnection Event!");
-    }
-    static public bool IsConnectedToServer()
-    {
-        return networkClient.IsConnected();
-    }
-    static public void ConnectToServer()
-    {
-        networkClient.Connect();
-    }
-    static public void DisconnectFromServer()
-    {
-        networkClient.Disconnect();
-    }
-    #endregion
 
-    #region Setup
-    static NetworkClient networkClient;
-    static GameLogic gameLogic;
+    public static void ConnectionEvent()
+    {
+        SendMessageToServer($"{ClientToServerSignifiers.RequestUnpoppedBalloons}");
+    }
 
-    static public void SetNetworkedClient(NetworkClient NetworkClient)
+    public static void DisconnectionEvent()
     {
-        networkClient = NetworkClient;
+        Debug.Log("Disconnected from the server.");
     }
-    static public NetworkClient GetNetworkedClient()
-    {
-        return networkClient;
-    }
-    static public void SetGameLogic(GameLogic GameLogic)
-    {
-        gameLogic = GameLogic;
-    }
-    #endregion
+
+    public static void SetGameLogic(GameLogic logic) => gameLogic = logic;
+    public static void SetNetworkedClient(NetworkClient client) => networkClient = client;
 }
 
 #region Protocol Signifiers
