@@ -8,23 +8,37 @@ static public class NetworkClientProcessing
     #region Send and Receive Data Functions
     static public void ReceivedMessageFromServer(string msg, TransportPipeline pipeline)
     {
-        Debug.Log("Network msg received =  " + msg + ", from pipeline = " + pipeline);
-
         string[] csv = msg.Split(',');
         int signifier = int.Parse(csv[0]);
 
-        // if (signifier == ServerToClientSignifiers.asd)
-        // {
-
-        // }
-        // else if (signifier == ServerToClientSignifiers.asd)
-        // {
-
-        // }
-
-        //gameLogic.DoSomething();
-
+        if (signifier == ServerToClientSignifiers.SpawnBalloon)
+        {
+            int balloonID = int.Parse(csv[1]);
+            float xPercent = float.Parse(csv[2]);
+            float yPercent = float.Parse(csv[3]);
+            Vector2 screenPosition = new Vector2(xPercent, yPercent);
+            gameLogic.SpawnNewBalloon(screenPosition, balloonID);
+        }
+        else if (signifier == ServerToClientSignifiers.RemoveBalloon)
+        {
+            int balloonID = int.Parse(csv[1]);
+            GameObject balloon = GameObject.Find($"Balloon_{balloonID}");
+            if (balloon != null) Destroy(balloon);
+        }
+        else if (signifier == ServerToClientSignifiers.SendUnpoppedBalloons)
+        {
+            // Parse and spawn all unpopped balloons
+            for (int i = 1; i < csv.Length; i += 3)
+            {
+                int balloonID = int.Parse(csv[i]);
+                float xPercent = float.Parse(csv[i + 1]);
+                float yPercent = float.Parse(csv[i + 2]);
+                Vector2 screenPosition = new Vector2(xPercent, yPercent);
+                gameLogic.SpawnNewBalloon(screenPosition, balloonID);
+            }
+        }
     }
+
 
     static public void SendMessageToServer(string msg, TransportPipeline pipeline)
     {
